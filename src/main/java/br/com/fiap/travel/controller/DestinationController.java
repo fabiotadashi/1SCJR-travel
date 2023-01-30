@@ -1,6 +1,8 @@
 package br.com.fiap.travel.controller;
 
+import br.com.fiap.travel.dto.DestinationCreateUpdateDTO;
 import br.com.fiap.travel.dto.DestinationDTO;
+import br.com.fiap.travel.dto.DestinationPriceDTO;
 import br.com.fiap.travel.dto.DestinationSimpleDTO;
 import org.apache.catalina.valves.ExtendedAccessLogValve;
 import org.springframework.http.HttpStatus;
@@ -44,6 +46,63 @@ public class DestinationController {
                 .filter(destinationDTO -> destinationDTO.id().equals(id))
                 .findFirst()
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+
+
+    }
+
+    @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
+    public DestinationDTO create(@RequestBody DestinationCreateUpdateDTO destinationCreateUpdateDTO){
+        Long id = destinationDTOList.get(destinationDTOList.size() - 1).id() + 1;
+        DestinationDTO newDestination = new DestinationDTO(id, destinationCreateUpdateDTO.name(), destinationCreateUpdateDTO.airport(), destinationCreateUpdateDTO.country(), destinationCreateUpdateDTO.description(), destinationCreateUpdateDTO.price(), "BRL");
+        destinationDTOList.add(newDestination);
+        return newDestination;
+    }
+
+    @PutMapping("{id}")
+    public DestinationDTO update(@PathVariable Long id,
+                                 @RequestBody DestinationCreateUpdateDTO destinationCreateUpdateDTO){
+        DestinationDTO destinationDTO = findById(id);
+        destinationDTOList.remove(destinationDTO);
+
+        DestinationDTO updatedDestination = new DestinationDTO(destinationDTO.id(),
+                destinationCreateUpdateDTO.name(),
+                destinationCreateUpdateDTO.airport(),
+                destinationCreateUpdateDTO.country(),
+                destinationCreateUpdateDTO.description(),
+                destinationCreateUpdateDTO.price(),
+                destinationDTO.currency());
+
+        destinationDTOList.add(updatedDestination);
+        return updatedDestination;
+    }
+
+    @PatchMapping("{id}")
+    public DestinationDTO updatePrice(@PathVariable Long id,
+                                      @RequestBody DestinationPriceDTO destinationPriceDTO){
+
+        DestinationDTO destinationDTO = findById(id);
+
+        destinationDTOList.remove(destinationDTO);
+
+        DestinationDTO updatedPriceDestination = new DestinationDTO(destinationDTO.id(),
+                destinationDTO.name(),
+                destinationDTO.airport(),
+                destinationDTO.country(),
+                destinationDTO.description(),
+                destinationPriceDTO.price(),
+                destinationDTO.currency());
+
+        destinationDTOList.add(updatedPriceDestination);
+
+        return updatedPriceDestination;
+    }
+
+    @DeleteMapping("{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void delete(@PathVariable Long id){
+        DestinationDTO destinationDTO = findById(id);
+        destinationDTOList.remove(destinationDTO);
     }
 
 }
