@@ -46,8 +46,6 @@ public class DestinationController {
                 .filter(destinationDTO -> destinationDTO.id().equals(id))
                 .findFirst()
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
-
-
     }
 
     @PostMapping
