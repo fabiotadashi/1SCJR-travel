@@ -13,7 +13,8 @@ spring:
     password: fiap
   h2:
     console:
-      enabled: true
+      enabled: true #validar
   jpa:
     hibernate:
       ddl-auto: update
+    show-sql: true

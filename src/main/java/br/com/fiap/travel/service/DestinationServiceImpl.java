@@ -7,7 +7,9 @@ import br.com.fiap.travel.dto.DestinationSimpleDTO;
 import br.com.fiap.travel.entity.DestinationEntity;
 import br.com.fiap.travel.repository.DestinationRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -44,41 +46,58 @@ public class DestinationServiceImpl implements DestinationService {
 
     @Override
     public DestinationDTO get(Long id) {
-        return null;
+        DestinationEntity destinationEntity = getDestinationEntity(id);
+        return new DestinationDTO(destinationEntity);
     }
 
     @Override
     public DestinationDTO create(DestinationCreateUpdateDTO destinationCreateUpdateDTO) {
 
-        DestinationEntity destinationEntity = new DestinationEntity();
 //        DestinationEntity destinationEntity = objectMapper.convertValue(destinationCreateUpdateDTO, DestinationEntity.class);
+        DestinationEntity destinationEntity = new DestinationEntity(destinationCreateUpdateDTO);
 
-        destinationEntity.setName(destinationCreateUpdateDTO.name());
-        destinationEntity.setAirport(destinationCreateUpdateDTO.airport());
-        destinationEntity.setCountry(destinationCreateUpdateDTO.country());
-        destinationEntity.setDescription(destinationCreateUpdateDTO.description());
-        destinationEntity.setPrice(destinationCreateUpdateDTO.price());
-        destinationEntity.setCurrency("BRL");
+        return saveDestinationEntityAndGetDestinationDTO(destinationEntity);
 
-        DestinationEntity savedDestinationEntity = destinationRepository.save(destinationEntity);
-
-        DestinationDTO destinationDTO = objectMapper.convertValue(savedDestinationEntity, DestinationDTO.class);
-
-        return destinationDTO;
     }
 
     @Override
     public DestinationDTO update(Long id, DestinationCreateUpdateDTO destinationCreateUpdateDTO) {
-        return null;
+        DestinationEntity destinationEntity = getDestinationEntity(id);
+
+        destinationEntity.setName(destinationCreateUpdateDTO.name());
+        destinationEntity.setDescription(destinationCreateUpdateDTO.description());
+        destinationEntity.setAirport(destinationCreateUpdateDTO.airport());
+        destinationEntity.setCountry(destinationCreateUpdateDTO.country());
+        destinationEntity.setPrice(destinationCreateUpdateDTO.price());
+
+        return saveDestinationEntityAndGetDestinationDTO(destinationEntity);
     }
 
     @Override
     public DestinationDTO updatePrice(Long id, DestinationPriceDTO destinationPriceDTO) {
-        return null;
+        DestinationEntity destinationEntity = getDestinationEntity(id);
+
+        destinationEntity.setPrice(destinationPriceDTO.price());
+
+        return saveDestinationEntityAndGetDestinationDTO(destinationEntity);
     }
 
     @Override
     public void delete(Long id) {
+        DestinationEntity destinationEntity = getDestinationEntity(id);
 
+        destinationRepository.delete(destinationEntity);
     }
+
+    private DestinationEntity getDestinationEntity(Long id) {
+        return destinationRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "destination.not.found"));
+    }
+
+    private DestinationDTO saveDestinationEntityAndGetDestinationDTO(DestinationEntity destinationEntity) {
+        DestinationEntity savedDestinationEntity = destinationRepository.save(destinationEntity);
+
+        return objectMapper.convertValue(savedDestinationEntity, DestinationDTO.class);
+    }
+
 }
