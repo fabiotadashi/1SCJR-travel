@@ -23,3 +23,7 @@ spring:
       name: usuario
       password: senha
       roles: USER
+
+jwt:
+  secret: s3cr37F14Ps3cr37F14Ps3cr37F14Ps3cr37F14Ps3cr37F14Ps3cr37F14Ps3cr37F14Ps3cr37F14P
+  expirationInSeconds: 60
