@@ -20,8 +20,8 @@ public class JwtTokenUtil {
 
     public String generateToken(String username){
         LocalDateTime now = LocalDateTime.now();
-        Date issuedAt = dateFromLocalDateTime(now);
-        Date expiration = dateFromLocalDateTime(now.plusSeconds(expirationInSeconds));
+        Date issuedAt = Date.from(now.toInstant(OffsetDateTime.now().getOffset()));
+        Date expiration = Date.from(now.plusSeconds(expirationInSeconds).toInstant(OffsetDateTime.now().getOffset()));
 
         return Jwts.builder()
                 .setIssuedAt(issuedAt)
