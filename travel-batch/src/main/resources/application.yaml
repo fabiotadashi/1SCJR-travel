@@ -1,0 +1,15 @@
+spring:
+  datasource:
+    url: jdbc:h2:~/fiaptravelbatch;DB_CLOSE_ON_EXIT=FALSE
+    username: fiap
+    password: fiap
+  batch:
+    jdbc:
+      initialize-schema: always
+      platform: h2
+      schema: classpath:schema-h2.sql
+
+fiap:
+  travel:
+    path: /Users/fabiomiyasato/Downloads/travel-batch/delete-file.txt
+    resource: destination.csv
